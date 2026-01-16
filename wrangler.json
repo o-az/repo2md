@@ -3,16 +3,17 @@
   "name": "repo2md",
   "keep_vars": true,
   "workers_dev": true,
+  "preview_urls": true,
   "main": "./src/index.ts",
   "compatibility_date": "2025-12-10",
   "compatibility_flags": [
     "nodejs_compat"
   ],
   "dev": {
-    "port": 6969
+    "port": 6969,
+    "BUN_VERSION": "1.3.6",
   },
   "observability": {
     "enabled": true
-  },
-  "preview_urls": true
+  }
 }
