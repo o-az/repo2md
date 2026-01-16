@@ -1,0 +1,43 @@
+name: Checks
+
+on:
+  push:
+  pull_request:
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  ACTIONS_RUNNER_DEBUG: true
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🔑 Checkout"
+        uses: actions/checkout@v6
+
+      - name: "🐰 Setup Bun"
+        uses: oven-sh/setup-bun@main
+        with:
+          bun-version: latest
+
+      - name: "Install Dependencies"
+        run: bun install --frozen-lockfile
+        
+      
+      - name: "Setup Biome"
+        uses: biomejs/setup-biome@main
+        with:
+          version: latest
+
+      - name: "Format & Lint"
+        run: biome ci .
+
+      - name: "Type Check"
+        run: bun tsgo --project tsconfig.json --noEmit
+
+      - name: "Build"
+        run: bun run build

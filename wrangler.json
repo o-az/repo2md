@@ -1,0 +1,18 @@
+{
+  "$schema": "https://esm.sh/wrangler/config-schema.json",
+  "name": "repo2md",
+  "keep_vars": true,
+  "workers_dev": true,
+  "main": "./src/index.ts",
+  "compatibility_date": "2025-12-10",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "dev": {
+    "port": 6969
+  },
+  "observability": {
+    "enabled": true
+  },
+  "preview_urls": true
+}
