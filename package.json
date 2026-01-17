@@ -4,10 +4,10 @@
   "type": "module",
   "repository": "github:o-az/repo2md",
   "bin": {
-    "gh2md": "./src/cli.ts"
+    "gh2md": "./dist/cli.js"
   },
   "files": [
-    "src/cli.ts"
+    "dist/cli.js"
   ],
   "imports": {
     "#*": "./src/*",
