@@ -1,8 +1,14 @@
 {
-  "name": "repo2md",
+  "name": "gh2md",
   "version": "0.0.0",
   "type": "module",
   "repository": "github:o-az/repo2md",
+  "bin": {
+    "gh2md": "./src/cli.mjs"
+  },
+  "files": [
+    "src/cli.mjs"
+  ],
   "imports": {
     "#*": "./src/*",
     "#package.json": "./package.json",
@@ -16,7 +22,8 @@
     "types": "wrangler types --env-interface CloudflareBindings",
     "check": "biome check . --write --unsafe",
     "check:types": "bun tsgo --project tsconfig.json --noEmit",
-    "test:e2e": "./scripts/checks.sh"
+    "test:e2e": "./scripts/checks.sh",
+    "prepublishOnly": "bun run build:cli"
   },
   "dependencies": {
     "hono": "^4.11.4"
