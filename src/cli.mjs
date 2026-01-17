@@ -1,30 +1,30 @@
 #!/usr/bin/env node
 
-const API_BASE = 'https://gh2md.evm.workers.dev'
+const API_BASE = 'https://2md.evm.workers.dev'
 
 async function main() {
   const args = process.argv.slice(2)
 
   if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
-    console.log(`gh2md - Convert GitHub repos to markdown
+    console.log(`2md - Convert repos to markdown
 
 Usage:
-  gh2md <github-url>
-  gh2md <owner/repo>
-  gh2md <owner/repo/path>
+  2md <github-url>
+  2md <owner/repo>
+  2md <owner/repo/path>
 
 Examples:
-  gh2md https://github.com/honojs/hono
-  gh2md honojs/hono
-  gh2md honojs/hono/src
-  gh2md https://github.com/honojs/hono/tree/main/src
-  gh2md https://github.com/honojs/hono/blob/main/README.md`)
+  2md https://github.com/honojs/hono
+  2md honojs/hono
+  2md honojs/hono/src
+  2md https://github.com/honojs/hono/tree/main/src
+  2md https://github.com/honojs/hono/blob/main/README.md`)
     process.exit(0)
   }
 
   let [url] = args
   if (!url) {
-    console.error('Error: Missing GitHub URL')
+    console.error('Error: Missing URL')
     process.exit(1)
   }
 

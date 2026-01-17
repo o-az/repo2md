@@ -1,10 +1,10 @@
 {
-  "name": "gh2md",
+  "name": "2md",
   "version": "0.0.0",
   "type": "module",
-  "repository": "github:o-az/gh2md",
+  "repository": "github:o-az/2md",
   "bin": {
-    "gh2md": "./src/cli.mjs"
+    "2md": "./src/cli.mjs"
   },
   "files": [
     "src/cli.mjs"
