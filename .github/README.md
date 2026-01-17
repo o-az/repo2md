@@ -4,11 +4,11 @@ Converts GitHub repositories, directories, or single files into a single Markdow
 
 ## Examples
 
-- Whole repo: [2md.dev/gh_vercel-labs_json-render.md](https://2md.dev/gh_vercel-labs_json-render.md)
-- Directory: [2md.dev/gh_vercel-labs_json-render_examples_dashboard.md](https://2md.dev/gh_vercel-labs_json-render_examples_dashboard.md)
-- Single file: [2md.dev/ghf_vercel-labs_json-render_README.md.md](https://2md.dev/ghf_vercel-labs_json-render_README.md.md)
+- Whole repo: [2md.sauce.wiki/gh_vercel-labs_json-render.md](https://2md.sauce.wiki/gh_vercel-labs_json-render.md)
+- Directory: [2md.sauce.wiki/gh_vercel-labs_json-render_examples_dashboard.md](https://2md.sauce.wiki/gh_vercel-labs_json-render_examples_dashboard.md)
+- Single file: [2md.sauce.wiki/ghf_vercel-labs_json-render_README.md.md](https://2md.sauce.wiki/ghf_vercel-labs_json-render_README.md.md)
 
-You can also paste any GitHub URL directly (e.g., `2md.dev/github.com/owner/repo`) and it will redirect to the clean format.
+You can also paste any GitHub URL directly (e.g., `2md.sauce.wiki/github.com/owner/repo`) and it will redirect to the clean format.
 
 ## CLI
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const API_BASE = 'https://2md.evm.workers.dev'
+const API_BASE = 'https://2md.sauce.wiki'
 
 async function main() {
   const args = process.argv.slice(2)
