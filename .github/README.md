@@ -2,23 +2,27 @@
 
 Converts GitHub repositories, directories, or single files into a single Markdown document for easy consumption by LLMs or documentation tools.
 
+## The URL
+
+https://2md.sauce.wiki
+
 ## Examples
 
 **Whole repo**
 
-Input: `2md.sauce.wiki/github.com/vercel-labs/json-render`
+https://2md.sauce.wiki/https://github.com/vercel-labs/json-render
 
 Generates: [2md.sauce.wiki/gh_vercel-labs_json-render.md](https://2md.sauce.wiki/gh_vercel-labs_json-render.md)
 
 **Directory**
 
-Input: `2md.sauce.wiki/github.com/vercel-labs/json-render/tree/main/examples/dashboard`
+https://2md.sauce.wiki/github.com/vercel-labs/json-render/tree/main/examples/dashboard
 
 Generates: [2md.sauce.wiki/gh_vercel-labs_json-render_examples_dashboard.md](https://2md.sauce.wiki/gh_vercel-labs_json-render_examples_dashboard.md)
 
 **Single file**
 
-Input: `2md.sauce.wiki/github.com/vercel-labs/json-render/blob/main/README.md`
+https://2md.sauce.wiki/github.com/vercel-labs/json-render/blob/main/README.md
 
 Generates: [2md.sauce.wiki/ghf_vercel-labs_json-render_README.md](https://2md.sauce.wiki/github.com/vercel-labs/json-render/blob/main/README.md)
 
