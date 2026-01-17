@@ -66,12 +66,10 @@ app.use('/:path{.+}', async (c, next) => {
       ? urlPath
       : `https://${urlPath}`
     const parsed = parseGitHubUrl(githubUrl)
-    const cleanPath = toCleanPath(
-      parsed.owner,
-      parsed.repo,
-      parsed.path,
-      parsed.type === 'file',
-    )
+    if (parsed.type === 'file') {
+      return next()
+    }
+    const cleanPath = toCleanPath(parsed.owner, parsed.repo, parsed.path, false)
     return c.redirect(cleanPath, 301)
   }
   return next()
