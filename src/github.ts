@@ -10,7 +10,7 @@ export interface GitHubFile {
 
 export interface FilesResponse {
   meta: { sha: string }
-  files: GitHubFile[]
+  files: Array<GitHubFile>
 }
 
 export interface ParsedGitHubUrl {
@@ -52,20 +52,36 @@ export function parseGitHubUrl(url: string): ParsedGitHubUrl {
       : { type: 'repo', owner, repo, branch }
   }
 
-  return { type: 'repo', owner, repo, branch: 'main' }
+  const shortPath = parts.slice(2).join('/')
+  const fileName = shortPath.split('/').pop()?.toLowerCase() || ''
+  const knownFiles = [
+    'justfile',
+    'dockerfile',
+    'makefile',
+    'rakefile',
+    'gemfile',
+    'procfile',
+    'license',
+    'readme',
+    'changelog',
+  ]
+  const isFile = fileName.includes('.') || knownFiles.includes(fileName)
+
+  return isFile
+    ? { type: 'file', owner, repo, branch: 'main', path: shortPath }
+    : { type: 'directory', owner, repo, branch: 'main', path: shortPath }
 }
 
 export async function getRepoFiles(
   owner: string,
   repo: string,
   branch: string,
-): Promise<GitHubFile[]> {
+): Promise<Array<GitHubFile>> {
   const response = await fetch(
     `${UNGH_BASE}/repos/${owner}/${repo}/files/${branch}`,
   )
-  if (!response.ok) {
-    throw new Error(`Failed to fetch files: ${response.status}`)
-  }
+  if (!response.ok) throw new Error(`Failed to fetch files: ${response.status}`)
+
   const data = (await response.json()) as FilesResponse
   return data.files
 }
@@ -78,31 +94,30 @@ export async function getFileContent(
 ): Promise<string> {
   const url = `${RAW_GITHUB_BASE}/${owner}/${repo}/${branch}/${path}`
   const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error(`Failed to fetch file: ${response.status}`)
-  }
+  if (!response.ok) throw new Error(`Failed to fetch file: ${response.status}`)
+
   return response.text()
 }
 
 export function filterFiles(
-  files: GitHubFile[],
-  ignorePatterns: string[],
-): GitHubFile[] {
+  files: Array<GitHubFile>,
+  ignorePatterns: Array<string>,
+): Array<GitHubFile> {
   return files.filter(file => {
     const pathParts = file.path.split('/')
     return !ignorePatterns.some(pattern => {
-      if (pattern.includes('/')) {
+      if (pattern.includes('/'))
         return file.path.startsWith(pattern) || file.path === pattern
-      }
+
       return pathParts.some(part => part === pattern)
     })
   })
 }
 
 export function filterByDirectory(
-  files: GitHubFile[],
+  files: Array<GitHubFile>,
   directory: string,
-): GitHubFile[] {
+): Array<GitHubFile> {
   const normalizedDir = directory.replace(/\/$/, '')
   return files.filter(file => file.path.startsWith(`${normalizedDir}/`))
 }

@@ -1,54 +1,19 @@
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 
-import { IGNORE_FILES } from '#constants.ts'
 import {
-  parseGitHubUrl,
-  getRepoFiles,
-  getFileContent,
-  filterFiles,
-  filterByDirectory,
   isTextFile,
+  filterFiles,
+  getRepoFiles,
+  parseGitHubUrl,
+  getFileContent,
   type GitHubFile,
+  filterByDirectory,
 } from '#github.ts'
+import { IGNORE_FILES } from '#constants.ts'
+import { parseCleanPath, toCleanPath } from '#url.ts'
 
 export const app = new Hono<{ Bindings: Cloudflare.Env }>()
-
-function toCleanPath(
-  owner: string,
-  repo: string,
-  path?: string,
-  isFile = false,
-): string {
-  const prefix = isFile ? 'ghf' : 'gh'
-  const parts = [prefix, owner, repo]
-  if (path) {
-    parts.push(...path.split('/'))
-  }
-  return `/${parts.join('_')}.md`
-}
-
-function parseCleanPath(
-  cleanPath: string,
-): { owner: string; repo: string; path?: string; isFile: boolean } | null {
-  if (
-    (!cleanPath.startsWith('gh_') && !cleanPath.startsWith('ghf_')) ||
-    !cleanPath.endsWith('.md')
-  )
-    return null
-  const isFile = cleanPath.startsWith('ghf_')
-  const withoutExt = cleanPath.slice(0, -3)
-  const parts = withoutExt.split('_')
-  if (parts.length < 3) return null
-  const [, owner, repo, ...rest] = parts
-  if (!owner || !repo) return null
-  return {
-    owner,
-    repo,
-    path: rest.length > 0 ? rest.join('/') : undefined,
-    isFile,
-  }
-}
 
 app.use('/:path{.+}', async (c, next) => {
   const urlPath = c.req.param('path')
@@ -87,8 +52,25 @@ app.get('/ping', context => context.text('ok'))
 app.get('/favicon.ico', context => context.body(null, 204))
 
 app.get('/', context => {
-  return context.text(
-    'Usage: /{github-url}\n\nExamples:\n/github.com/owner/repo\n/github.com/owner/repo/tree/main/src\n/github.com/owner/repo/blob/main/README.md',
+  return context.html(
+    //
+    /* html */ `<html>
+    <body style="font-family: monospace;">
+      <h1>2md</h1>
+      <p>Usage: /{github-url}</p>
+      <ul>
+        <li>/github.com/owner/repo</li>
+        <li>/github.com/owner/repo/tree/main/src</li>
+        <li>/github.com/owner/repo/blob/main/README.md</li>
+      </ul>
+      <p>Examples:</p>
+      <ul>
+        <li><a href="https://2md.sauce.wiki/github.com/o-az/2md" target="_blank" rel="noopener noreferrer">/github.com/o-az/2md</a></li>
+        <li><a href="https://2md.sauce.wiki/github.com/o-az/2md/tree/main/src" target="_blank" rel="noopener noreferrer">/github.com/o-az/2md/tree/main/src</a></li>
+        <li><a href="https://2md.sauce.wiki/github.com/o-az/2md/justfile" target="_blank" rel="noopener noreferrer">/github.com/o-az/2md/justfile</a></li>
+      </ul>
+    </body>
+  </html>`,
   )
 })
 
@@ -110,11 +92,9 @@ app.get('/:cleanPath{ghf?_.+\\.md}', async context => {
 
   const allFiles = await getRepoFiles(owner, repo, 'HEAD')
 
-  let files: GitHubFile[] = allFiles
+  let files: Array<GitHubFile> = allFiles
 
-  if (path) {
-    files = filterByDirectory(files, path)
-  }
+  if (path) files = filterByDirectory(files, path)
 
   files = filterFiles(files, IGNORE_FILES)
   files = files.filter(f => isTextFile(f.path))
@@ -156,11 +136,10 @@ app.get('/:path{.+}', async context => {
 
   const allFiles = await getRepoFiles(parsed.owner, parsed.repo, parsed.branch)
 
-  let files: GitHubFile[] = allFiles
+  let files: Array<GitHubFile> = allFiles
 
-  if (parsed.type === 'directory' && parsed.path) {
+  if (parsed.type === 'directory' && parsed.path)
     files = filterByDirectory(files, parsed.path)
-  }
 
   files = filterFiles(files, IGNORE_FILES)
   files = files.filter(f => isTextFile(f.path))
