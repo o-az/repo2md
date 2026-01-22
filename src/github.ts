@@ -1,5 +1,6 @@
 const UNGH_BASE = 'https://ungh.cc'
 const RAW_GITHUB_BASE = 'https://raw.githubusercontent.com'
+const GITHUB_API_BASE = 'https://api.github.com'
 
 export interface GitHubFile {
   path: string
@@ -19,6 +20,25 @@ export interface ParsedGitHubUrl {
   repo: string
   branch: string
   path?: string
+}
+
+export async function resolveBranchAndPath(
+  owner: string,
+  repo: string,
+  segments: string[],
+): Promise<{ branch: string; path?: string }> {
+  for (let i = segments.length; i >= 1; i--) {
+    const branch = segments.slice(0, i).join('/')
+    const path = segments.slice(i).join('/') || undefined
+    try {
+      await getRepoFiles(owner, repo, branch)
+      return { branch, path }
+    } catch {}
+  }
+  return {
+    branch: segments[0] ?? 'main',
+    path: segments.slice(1).join('/') || undefined,
+  }
 }
 
 export function parseGitHubUrl(url: string): ParsedGitHubUrl {
@@ -47,9 +67,7 @@ export function parseGitHubUrl(url: string): ParsedGitHubUrl {
   }
 
   if (urlType === 'tree') {
-    return path
-      ? { type: 'directory', owner, repo, branch, path }
-      : { type: 'repo', owner, repo, branch }
+    return { type: 'directory', owner, repo, branch, path: path || undefined }
   }
 
   const shortPath = parts.slice(2).join('/')
@@ -72,18 +90,73 @@ export function parseGitHubUrl(url: string): ParsedGitHubUrl {
     : { type: 'directory', owner, repo, branch: 'main', path: shortPath }
 }
 
-export async function getRepoFiles(
+async function getRepoFilesFromUngh(
   owner: string,
   repo: string,
   branch: string,
 ): Promise<Array<GitHubFile>> {
   const response = await fetch(
-    `${UNGH_BASE}/repos/${owner}/${repo}/files/${branch}`,
+    `${UNGH_BASE}/repos/${owner}/${repo}/files/${encodeURIComponent(branch)}`,
   )
-  if (!response.ok) throw new Error(`Failed to fetch files: ${response.status}`)
+  if (!response.ok) {
+    if (response.status === 403 || response.status === 429) {
+      throw new Error(`ungh rate limit: ${response.status}`)
+    }
+    throw new Error(`Failed to fetch files: ${response.status}`)
+  }
 
   const data = (await response.json()) as FilesResponse
   return data.files
+}
+
+interface GitHubTreeResponse {
+  tree: Array<{
+    path: string
+    mode: string
+    sha: string
+    size?: number
+    type: string
+  }>
+  truncated: boolean
+}
+
+async function getRepoFilesFromGitHub(
+  owner: string,
+  repo: string,
+  branch: string,
+): Promise<Array<GitHubFile>> {
+  const response = await fetch(
+    `${GITHUB_API_BASE}/repos/${owner}/${repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`,
+    { headers: { 'User-Agent': '2md' } },
+  )
+  if (!response.ok) {
+    throw new Error(`GitHub API error: ${response.status}`)
+  }
+
+  const data = (await response.json()) as GitHubTreeResponse
+  return data.tree
+    .filter(item => item.type === 'blob')
+    .map(item => ({
+      path: item.path,
+      mode: item.mode,
+      sha: item.sha,
+      size: item.size ?? 0,
+    }))
+}
+
+export async function getRepoFiles(
+  owner: string,
+  repo: string,
+  branch: string,
+): Promise<Array<GitHubFile>> {
+  try {
+    return await getRepoFilesFromUngh(owner, repo, branch)
+  } catch (e) {
+    if (e instanceof Error && e.message.includes('rate limit')) {
+      return await getRepoFilesFromGitHub(owner, repo, branch)
+    }
+    throw e
+  }
 }
 
 export async function getFileContent(
@@ -92,7 +165,8 @@ export async function getFileContent(
   branch: string,
   path: string,
 ): Promise<string> {
-  const url = `${RAW_GITHUB_BASE}/${owner}/${repo}/${branch}/${path}`
+  const encodedPath = path.split('/').map(encodeURIComponent).join('/')
+  const url = `${RAW_GITHUB_BASE}/${owner}/${repo}/${encodeURIComponent(branch)}/${encodedPath}`
   const response = await fetch(url)
   if (!response.ok) throw new Error(`Failed to fetch file: ${response.status}`)
 
