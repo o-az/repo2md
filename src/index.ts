@@ -46,6 +46,7 @@ app.use('/:path{.+}', async (c, next) => {
         parsed.owner,
         parsed.repo,
         segments,
+        c.env.GITHUB_TOKEN,
       )
       branch = resolved.branch
       path = resolved.path
@@ -223,6 +224,7 @@ app.get('/:path{.+}', cacheMiddleware, async context => {
       parsed.owner,
       parsed.repo,
       segments,
+      context.env.GITHUB_TOKEN,
     )
     branch = resolved.branch
     path = resolved.path

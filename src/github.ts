@@ -26,9 +26,10 @@ export async function resolveBranchAndPath(
   owner: string,
   repo: string,
   segments: string[],
+  token?: string,
 ): Promise<{ branch: string; path?: string }> {
   if (segments.length === 0) {
-    const defaultBranch = await getDefaultBranch(owner, repo)
+    const defaultBranch = await getDefaultBranch(owner, repo, token)
     return { branch: defaultBranch }
   }
 
@@ -45,7 +46,7 @@ export async function resolveBranchAndPath(
     }
   }
 
-  const defaultBranch = await getDefaultBranch(owner, repo)
+  const defaultBranch = await getDefaultBranch(owner, repo, token)
   return {
     branch: defaultBranch,
     path: segments.join('/') || undefined,
@@ -173,9 +174,14 @@ export async function getRepoFiles(
 export async function getDefaultBranch(
   owner: string,
   repo: string,
+  token?: string,
 ): Promise<string> {
+  const headers: Record<string, string> = { 'User-Agent': '2md' }
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
   const response = await fetch(`${GITHUB_API_BASE}/repos/${owner}/${repo}`, {
-    headers: { 'User-Agent': '2md' },
+    headers,
   })
   if (!response.ok) {
     return 'main'
