@@ -26,21 +26,21 @@
     "prepublishOnly": "bun run build:cli"
   },
   "dependencies": {
-    "hono": "^4.11.5",
+    "hono": "^4.11.7",
     "pretty-cache-header": "^1.0.0",
-    "zod": "^4.3.5"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.11",
-    "@cloudflare/vite-plugin": "^1.21.2",
+    "@biomejs/biome": "^2.3.13",
+    "@cloudflare/vite-plugin": "^1.22.0",
     "@total-typescript/ts-reset": "^0.6.1",
-    "@types/bun": "^1.3.6",
-    "@types/node": "^25.0.10",
-    "@typescript/native-preview": "^7.0.0-dev.20260122.3",
+    "@types/bun": "^1.3.7",
+    "@types/node": "^25.1.0",
+    "@typescript/native-preview": "^7.0.0-dev.20260128.1",
     "typescript": "^5.9.3",
-    "vite": "^8.0.0-beta.9",
-    "wrangler": "^4.60.0"
+    "vite": "^8.0.0-beta.10",
+    "wrangler": "^4.61.0"
   },
   "license": "MIT",
-  "packageManager": "bun@1.3.6"
+  "packageManager": "bun@1.3.7"
 }

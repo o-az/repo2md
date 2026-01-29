@@ -4,25 +4,25 @@ Converts GitHub repositories, directories, or single files into a single Markdow
 
 ## The URL
 
-https://2md.sauce.wiki
+<https://2md.sauce.wiki>
 
 ## Examples
 
-**Whole repo**
+**Whole repo**:
 
-https://2md.sauce.wiki/https://github.com/vercel-labs/json-render
+<https://2md.sauce.wiki/https://github.com/vercel-labs/json-render>
 
 Generates: [2md.sauce.wiki/gh_vercel-labs_json-render.md](https://2md.sauce.wiki/gh_vercel-labs_json-render.md)
 
-**Directory**
+**Directory**:
 
-https://2md.sauce.wiki/github.com/vercel-labs/json-render/tree/main/examples/dashboard
+<https://2md.sauce.wiki/github.com/vercel-labs/json-render/tree/main/examples/dashboard>
 
 Generates: [2md.sauce.wiki/gh_vercel-labs_json-render_examples_dashboard.md](https://2md.sauce.wiki/gh_vercel-labs_json-render_examples_dashboard.md)
 
-**Single file**
+**Single file**:
 
-https://2md.sauce.wiki/github.com/vercel-labs/json-render/blob/main/README.md
+<https://2md.sauce.wiki/github.com/vercel-labs/json-render/blob/main/README.md>
 
 Generates: [2md.sauce.wiki/ghf_vercel-labs_json-render_README.md](https://2md.sauce.wiki/github.com/vercel-labs/json-render/blob/main/README.md)
 
