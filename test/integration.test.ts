@@ -1,7 +1,7 @@
-import { app } from '#index.ts'
-
-import { env } from 'cloudflare:test'
+import { env } from 'cloudflare:workers'
 import { describe, expect, test } from 'vitest'
+
+import { app } from '#index.ts'
 
 const BROWSER_UA =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -125,7 +125,7 @@ describe('Branch handling', () => {
     const res = await fetchApp('github.com/honojs/hono/tree/v4.0.0/src')
     expect(res.status).toBe(200)
     const text = await res.text()
-    expect(text).toContain('honojs/hono/src')
+    expect(text).toContain('honojs/hono@v4.0.0/src')
   })
 
   test('tag returns content with tag in header via clean path', async () => {

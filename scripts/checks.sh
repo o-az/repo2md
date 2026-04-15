@@ -5,6 +5,16 @@ set -euo pipefail
 BASE_URL="${1:-http://localhost:6969}"
 FAILED=0
 
+# Wait for server to be responsive before the next heavy request
+wait_ready() {
+  for i in {1..10}; do
+    if curl -gs --max-time 2 "$BASE_URL/ping" >/dev/null 2>&1; then
+      return
+    fi
+    sleep 1
+  done
+}
+
 check() {
   local name="$1"
   local path="$2"
@@ -13,7 +23,7 @@ check() {
   printf "%-60s " "$name"
   
   if [[ -n "$expect_redirect" ]]; then
-    location=$(curl -s --max-time 10 -o /dev/null -w '%{redirect_url}' "$BASE_URL/$path")
+    location=$(curl -gs --max-time 10 -o /dev/null -w '%{redirect_url}' -H 'User-Agent: Mozilla/5.0' "$BASE_URL/$path")
     if [[ "$location" == *"$expect_redirect"* ]]; then
       echo "✓ -> $expect_redirect"
     else
@@ -21,7 +31,7 @@ check() {
       FAILED=1
     fi
   else
-    status=$(curl -s --max-time 10 -o /dev/null -w '%{http_code}' "$BASE_URL/$path")
+    status=$(curl -gs --max-time 10 -o /dev/null -w '%{http_code}' "$BASE_URL/$path")
     if [[ "$status" == "200" ]]; then
       echo "✓ (200)"
     else
@@ -35,16 +45,23 @@ check_content() {
   local name="$1"
   local path="$2"
   local expect_contains="$3"
+  local timeout="${4:-60}"
+  local tmpfile="$(mktemp)"
 
   printf "%-60s " "$name"
   
-  content=$(curl -sL --max-time 30 "$BASE_URL/$path" 2>/dev/null | head -50 || true)
-  if echo "$content" | grep -qF "$expect_contains"; then
+  curl -gsL --max-time "$timeout" "$BASE_URL/$path" > "$tmpfile" 2>/dev/null || true
+  if grep -qF "$expect_contains" "$tmpfile"; then
     echo "✓ (contains '$expect_contains')"
   else
-    echo "✗ expected to contain '$expect_contains'"
+    local bytes
+    bytes=$(wc -c < "$tmpfile")
+    local first_line
+    first_line=$(head -1 "$tmpfile")
+    echo "✗ expected to contain '$expect_contains' (got ${bytes} bytes, first line: '${first_line}')"
     FAILED=1
   fi
+  rm -f "$tmpfile"
 }
 
 check_submodule() {
@@ -55,7 +72,7 @@ check_submodule() {
 
   printf "%-60s " "$name"
   
-  curl -sL --max-time 90 "$BASE_URL/$path" > "$tmpfile" 2>/dev/null
+  curl -gsL --max-time 120 "$BASE_URL/$path" > "$tmpfile" 2>/dev/null
   if grep -qF "$expect_contains" "$tmpfile"; then
     echo "✓ (contains '$expect_contains')"
   else
@@ -65,6 +82,11 @@ check_submodule() {
   rm -f "$tmpfile"
 }
 
+echo "=== Utility endpoints ==="
+check "Ping" "ping"
+check "Root page" ""
+
+echo ""
 echo "=== Basic redirects ==="
 check "Whole repo (no https)" \
   "github.com/o-az/2md" \
@@ -81,6 +103,24 @@ check "Directory (tree/main)" \
 check "Directory shorthand (no tree)" \
   "github.com/o-az/2md/src" \
   "gh_o-az_2md@main_src.md"
+
+check "Repo with hyphen in owner/name" \
+  "github.com/o-az/2md" \
+  "gh_o-az_2md@main.md"
+
+echo ""
+echo "=== Clean path format ==="
+check "Clean path (repo)" \
+  "gh_o-az_2md@main.md"
+
+check "Clean path (directory)" \
+  "gh_o-az_2md@main_src.md"
+
+check "Clean path (file)" \
+  "ghf_o-az_2md@main_justfile.md"
+
+check "Clean path with tag" \
+  "gh_honojs_hono@v4.0.0_src.md"
 
 echo ""
 echo "=== File handling ==="
@@ -101,34 +141,6 @@ check_content "File in subdirectory" \
   "Hono"
 
 echo ""
-echo "=== Branch handling ==="
-check "Different branch (main)" \
-  "github.com/honojs/hono/tree/main/src" \
-  "gh_honojs_hono@main_src.md"
-
-check "Tag as branch" \
-  "github.com/honojs/hono/tree/v4.0.0/src" \
-  "gh_honojs_hono@v4.0.0_src.md"
-
-check_content "Tag returns different content than main" \
-  "github.com/honojs/hono/tree/v4.0.0/src" \
-  "honojs/hono@v4.0.0"
-
-echo ""
-echo "=== Clean path format ==="
-check "Clean path (repo)" \
-  "gh_o-az_2md@main.md"
-
-check "Clean path (directory)" \
-  "gh_o-az_2md@main_src.md"
-
-check "Clean path (file)" \
-  "ghf_o-az_2md@main_justfile.md"
-
-check "Clean path with tag" \
-  "gh_honojs_hono@v4.0.0_src.md"
-
-echo ""
 echo "=== Edge cases ==="
 check_content "Directory with dot in name" \
   "github.com/o-az/2md/tree/main/.github" \
@@ -137,28 +149,6 @@ check_content "Directory with dot in name" \
 check_content "File with multiple dots" \
   "github.com/o-az/2md/.env.example" \
   "NODE_ENV"
-
-check "Repo with hyphen in owner/name" \
-  "github.com/o-az/2md" \
-  "gh_o-az_2md@main.md"
-
-echo ""
-echo "=== Submodules support ==="
-check_content "Submodules param on repo with submodules" \
-  "github.com/foundry-rs/forge-std?submodules=true" \
-  "forge-std"
-
-check_submodule "Submodules param returns submodule content" \
-  "github.com/transmissions11/solmate?submodules=true" \
-  "# Submodule: lib/ds-test"
-
-check_content "No submodules param = no submodule content" \
-  "github.com/transmissions11/solmate" \
-  "solmate"
-
-check_submodule "Clean path with submodules" \
-  "gh_transmissions11_solmate@main.md?submodules=true" \
-  "# Submodule: lib/ds-test"
 
 echo ""
 echo "=== Include/Exclude filters ==="
@@ -203,9 +193,45 @@ check_content "Clean path with include" \
   "landing.tsx"
 
 echo ""
-echo "=== Utility endpoints ==="
-check "Ping" "ping"
-check "Root page" ""
+echo "=== External repos (heavy) ==="
+# These fetch large repos from GitHub — run sequentially with
+# pauses between each to avoid saturating the dev server.
+
+check "Branch redirect (honojs)" \
+  "github.com/honojs/hono/tree/main/src" \
+  "gh_honojs_hono@main_src.md"
+
+check "Tag redirect (honojs)" \
+  "github.com/honojs/hono/tree/v4.0.0/src" \
+  "gh_honojs_hono@v4.0.0_src.md"
+
+sleep 2 && wait_ready
+check_content "Tag returns different content than main" \
+  "github.com/honojs/hono/tree/v4.0.0/src" \
+  "honojs/hono@v4.0.0" 120
+
+echo ""
+echo "=== Submodules support (heavy) ==="
+
+sleep 2 && wait_ready
+check_content "No submodules param = no submodule content" \
+  "github.com/transmissions11/solmate" \
+  "solmate" 120
+
+sleep 2 && wait_ready
+check_content "Submodules param on repo with submodules" \
+  "github.com/foundry-rs/forge-std?submodules=true" \
+  "forge-std" 120
+
+sleep 2 && wait_ready
+check_submodule "Submodules param returns submodule content" \
+  "github.com/transmissions11/solmate?submodules=true" \
+  "# Submodule: lib/ds-test"
+
+sleep 2 && wait_ready
+check_submodule "Clean path with submodules" \
+  "gh_transmissions11_solmate@main.md?submodules=true" \
+  "# Submodule: lib/ds-test"
 
 echo ""
 if [[ $FAILED -eq 0 ]]; then

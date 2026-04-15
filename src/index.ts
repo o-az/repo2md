@@ -302,7 +302,7 @@ app.get('/:path{.+}', cacheMiddleware, async context => {
     10,
   )
 
-  let markdown = `# ${parsed.owner}/${parsed.repo}${path ? `/${path}` : ''}\n\n${contents.join('\n\n')}`
+  let markdown = `# ${parsed.owner}/${parsed.repo}@${branch}${path ? `/${path}` : ''}\n\n${contents.join('\n\n')}`
 
   if (includeSubmodules && !path) {
     let submoduleResults: Array<SubmoduleContent>

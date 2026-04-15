@@ -13,6 +13,8 @@ defaults:
 
 env:
   ACTIONS_RUNNER_DEBUG: true
+  WRANGLER_SEND_METRICS: false
+  NODE_OPTIONS: '--disable-warning=ExperimentalWarning --disable-warning=DeprecationWarning'
 
 jobs:
   check:
@@ -38,7 +40,7 @@ jobs:
       - name: "Format & Lint, & Type Check"
         run: |
           biome ci .
-          bun x oxlint@latest --type-aware --type-check
+          bun tsgo --project tsconfig.json --noEmit
 
       - name: "Build"
         env:
