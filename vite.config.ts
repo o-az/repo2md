@@ -29,7 +29,7 @@ export default defineConfig(config => {
     plugins: [cloudflare(), vitePluginDevtoolsJson()],
     server: {
       allowedHosts,
-      port: Number(env.PORT ?? 69_69),
+      port: devFlags.PORT,
       forwardConsole: devFlags.VITE_FORWARD_CONSOLE,
     },
   }

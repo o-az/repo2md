@@ -3,6 +3,7 @@ import { cloudflareTest } from '@cloudflare/vitest-pool-workers'
 
 export default defineConfig({
   test: {
+    testTimeout: 30_000,
     include: ['test/**/*.test.{ts,tsx}', 'test/**/*.spec.{ts,tsx}'],
   },
   plugins: [

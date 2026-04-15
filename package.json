@@ -43,7 +43,7 @@
     "@types/node": "^25.6.0",
     "@typescript/native-preview": "^7.0.0-dev.20260415.1",
     "@vitejs/devtools": "^0.1.13",
-    "@vitest/coverage-istanbul": "^4.1.4",
+    "@vitest/coverage-v8": "^4.1.4",
     "@vitest/ui": "^4.1.4",
     "oxlint-tsgolint": "^0.11.5",
     "typed-query-selector": "^2.12.1",

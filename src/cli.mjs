@@ -104,12 +104,7 @@ Using npx:
   console.log(text)
 }
 
-main()
-  .catch(error => {
-    console.error(error instanceof Error ? error.message : 'the world is ending')
-    process.exit(1)
-  })
-  .finally(() => {
-    // Ensure the process exits after completion
-    process.exit(0)
-  })
+main().catch(error => {
+  console.error(error instanceof Error ? error.message : 'the world is ending')
+  process.exit(1)
+})

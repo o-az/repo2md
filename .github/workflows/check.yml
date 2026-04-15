@@ -13,6 +13,8 @@ defaults:
 
 env:
   ACTIONS_RUNNER_DEBUG: true
+  WRANGLER_SEND_METRICS: false
+  NODE_OPTIONS: '--disable-warning=ExperimentalWarning --disable-warning=DeprecationWarning'
 
 jobs:
   check:
