@@ -8,9 +8,9 @@ const enabledSchema = z.stringbool()
 const devFlagsSchema = z.object({
   ALLOWED_HOSTS: z.prefault(z.string(), ''),
   PORT: z.prefault(z.coerce.number(), 6969),
-  DISABLE_CACHE: z.prefault(enabledSchema, false),
-  VITE_DEVTOOLS: z.prefault(enabledSchema, false),
-  VITE_FORWARD_CONSOLE: z.prefault(enabledSchema, false),
+  DISABLE_CACHE: z.prefault(enabledSchema, 'false'),
+  VITE_DEVTOOLS: z.prefault(enabledSchema, 'false'),
+  VITE_FORWARD_CONSOLE: z.prefault(enabledSchema, 'false'),
 })
 
 export default defineConfig(config => {
