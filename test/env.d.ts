@@ -1,4 +1,4 @@
-declare module 'cloudflare:test' {
-  // Extend ProvidedEnv to include the Cloudflare.Env bindings
-  interface ProvidedEnv extends Cloudflare.Env {}
+declare module 'cloudflare:workers' {
+  // ProvidedEnv controls the type of `import("cloudflare:workers").env`
+  interface ProvidedEnv extends Env {}
 }

@@ -1,12 +1,16 @@
-# [2md](https://2md.sauce.wiki)
+# [2md](2md.sauce.wiki)
 
 Converts GitHub repo, directory, or specific files into a single markdown document.
 
 Give it to your agent and awatch it rip 💨
 
-## The URL
-
 https://2md.sauce.wiki
+
+## Skill
+
+```sh
+npx --yes skills@latest add o-az/skills --skill github-to-markdown 
+```
 
 ## Examples
 

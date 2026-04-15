@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
-import { applyFilters, matchesPattern, parseFilterParams } from '#filter.ts'
+
 import type { GitHubFile } from '#github.ts'
+import { applyFilters, matchesPattern, parseFilterParams } from '#filter.ts'
 
 describe('parseFilterParams', () => {
   test('returns empty array for undefined/empty', () => {

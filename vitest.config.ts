@@ -1,23 +1,21 @@
-import { defineWorkersConfig } from '@cloudflare/vitest-pool-workers/config'
+import { defineConfig } from 'vitest/config'
+import { cloudflareTest } from '@cloudflare/vitest-pool-workers'
 
-export default defineWorkersConfig({
+export default defineConfig({
   test: {
     include: ['test/**/*.test.{ts,tsx}', 'test/**/*.spec.{ts,tsx}'],
-    // Longer timeout for network requests to GitHub API
-    testTimeout: 30_000,
-    coverage: {
-      provider: 'istanbul',
-    },
-    poolOptions: {
-      workers: {
-        wrangler: { configPath: './wrangler.json' },
-        miniflare: {
-          bindings: {
-            GITHUB_TOKEN: process.env.GITHUB_TOKEN ?? '',
-            DISABLE_CACHE: 'true',
-          },
+  },
+  plugins: [
+    cloudflareTest({
+      wrangler: {
+        configPath: './wrangler.json',
+      },
+      miniflare: {
+        bindings: {
+          DISABLE_CACHE: 'true',
+          GITHUB_TOKEN: process.env.GITHUB_TOKEN ?? '',
         },
       },
-    },
-  },
+    }),
+  ],
 })

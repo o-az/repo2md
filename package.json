@@ -1,7 +1,7 @@
 {
   "name": "2md",
   "description": "Converts GitHub repositories, directories, or specific files into a single markdown document for easy consumption by LLMs or documentation tools.",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "repository": "github:o-az/2md",
   "bin": {
@@ -21,11 +21,11 @@
     "build": "vite build",
     "preview": "vite preview",
     "deploy": "NODE_ENV='production' wrangler --config='wrangler.json' deploy",
-    "types": "wrangler types --env-interface CloudflareBindings",
     "check": "biome check . --write --unsafe",
-    "check:types": "bun x oxlint@latest --type-aware --type-check",
+    "check:types": "tsgo --project tsconfig.json --noEmit",
     "test": "vitest run",
     "test:e2e": "./scripts/checks.sh",
+    "types": "wrangler types --env-interface='CloudflareBindings' --env-file='.env.example'",
     "prepublishOnly": "bun run build:cli"
   },
   "dependencies": {
@@ -35,22 +35,24 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.14",
-    "@cloudflare/vite-plugin": "^1.24.0",
-    "@cloudflare/vitest-pool-workers": "^0.12.11",
+    "@biomejs/biome": "^2.4.12",
+    "@cloudflare/vite-plugin": "^1.32.3",
+    "@cloudflare/vitest-pool-workers": "^0.14.7",
     "@total-typescript/ts-reset": "^0.6.1",
-    "@types/bun": "^1.3.8",
-    "@types/node": "^25.2.3",
-    "@typescript/native-preview": "^7.0.0-dev.20260210.1",
-    "@vitest/coverage-istanbul": "3.2.4",
-    "@vitest/ui": "3.2.4",
+    "@types/bun": "^1.3.12",
+    "@types/node": "^25.6.0",
+    "@typescript/native-preview": "^7.0.0-dev.20260415.1",
+    "@vitejs/devtools": "^0.1.13",
+    "@vitest/coverage-istanbul": "^4.1.4",
+    "@vitest/ui": "^4.1.4",
     "oxlint-tsgolint": "^0.11.5",
-    "typed-query-selector": "^2.12.0",
+    "typed-query-selector": "^2.12.1",
     "typescript": "^5.9.3",
-    "vite": "^8.0.0-beta.13",
-    "vitest": "3.2.4",
-    "wrangler": "^4.64.0"
+    "vite": "^8.0.8",
+    "vite-plugin-devtools-json": "^1.0.0",
+    "vitest": "^4.1.4",
+    "wrangler": "^4.83.0"
   },
   "license": "MIT",
-  "packageManager": "bun@1.3.9"
+  "packageManager": "bun@1.3.12"
 }

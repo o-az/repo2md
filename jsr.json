@@ -1,0 +1,18 @@
+{
+  "$schema": "https://jsr.io/schema/config-file.v1.json",
+  "name": "@2md/2md",
+  "description": "Converts GitHub repositories, directories, or specific files into a single markdown document for easy consumption by LLMs or documentation tools.",
+  "version": "0.0.1",
+  "exports": "./src/cli.mjs",
+  "license": "MIT",
+  "publish": {
+    "include": [
+      "jsr.json",
+      "./src/cli.mjs",
+      ".github/README.md"
+    ],
+    "exclude": [
+      "./src/**/*.ts"
+    ]
+  }
+}

@@ -69,7 +69,7 @@ export function parseGitHubUrl(url: string): ParsedGitHubUrl {
   const repo = parts[1] ?? ''
 
   if (!owner || !repo) {
-    throw new Error('Invalid GitHub URL: missing owner or repo')
+    throw new Error(`Invalid GitHub URL - missing owner or repo: ${url}`)
   }
 
   if (parts.length === 2) {
@@ -382,7 +382,7 @@ function parseSubmoduleUrl(url: string): { owner: string; repo: string } | null 
   const normalized = url.replace(/^git@github\.com:/, 'https://github.com/').replace(/\.git$/, '')
 
   const match = normalized.match(/github\.com\/([^/]+)\/([^/]+)/)
-  if (!match || !match[1] || !match[2]) return null
+  if (!match?.[1] || !match[2]) return null
 
   return { owner: match[1], repo: match[2] }
 }
