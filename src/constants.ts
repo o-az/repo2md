@@ -27,7 +27,7 @@ export const AI_USER_AGENTS = [
   'Timpibot',
   'YouBot',
   'MistralAI-User',
-  'GoogleAgent-Mariner',
+  'GoogleAgent-Mariner'
 ]
 
 export const IGNORE_FILES = [
@@ -58,5 +58,5 @@ export const IGNORE_FILES = [
   'thumbs.db',
   '.env',
   '.env.local',
-  '.env.production',
+  '.env.production'
 ]

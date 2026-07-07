@@ -16,7 +16,7 @@ import {
   filterByDirectory,
   resolveBranchAndPath,
   fetchWithConcurrency,
-  type SubmoduleContent,
+  type SubmoduleContent
 } from '#github.ts'
 import { landingApp } from '#landing.tsx'
 import { applyFilters } from '#filter.ts'
@@ -66,7 +66,7 @@ app.use('/:path{.+}', async (context, next) => {
           parsed.owner,
           parsed.repo,
           segments,
-          context.env.GITHUB_TOKEN,
+          context.env.GITHUB_TOKEN
         )
         branch = resolved.branch
         path = resolved.path
@@ -86,7 +86,7 @@ app.use('/:path{.+}', async (context, next) => {
 app.notFound(context => {
   throw new HTTPException(404, {
     cause: context.error,
-    message: `${context.req.url} is not a valid path.`,
+    message: `${context.req.url} is not a valid path.`
   })
 })
 
@@ -115,7 +115,7 @@ app.get('/purge', async context => {
     purged: url.toString(),
     message: deleted
       ? 'Cache purged from this datacenter'
-      : 'Not found in cache (may not be cached at this datacenter)',
+      : 'Not found in cache (may not be cached at this datacenter)'
   })
 })
 
@@ -123,8 +123,8 @@ const cacheMiddleware = except(
   _ => env.DISABLE_CACHE === 'true',
   cache({
     cacheName: '2md',
-    cacheControl: cacheHeader({ public: true, maxAge: '5 minutes' }),
-  }),
+    cacheControl: cacheHeader({ public: true, maxAge: '5 minutes' })
+  })
 )
 
 app.use('/', cacheMiddleware)
@@ -146,7 +146,7 @@ app.get('/:cleanPath{ghf?_.+\\.(md|txt)}', cacheMiddleware, async context => {
     try {
       const content = await getFileContent(owner, repo, branch, path)
       return context.text(content, 200, {
-        'Content-Type': contentType,
+        'Content-Type': contentType
       })
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Failed to fetch file'
@@ -189,7 +189,7 @@ app.get('/:cleanPath{ghf?_.+\\.(md|txt)}', cacheMiddleware, async context => {
         return `## ${file.path}\n\n*Failed to fetch*`
       }
     },
-    10,
+    10
   )
 
   let markdown = `# ${owner}/${repo}@${branch}${path ? `/${path}` : ''}\n\n${contents.join('\n\n')}`
@@ -219,7 +219,7 @@ app.get('/:cleanPath{ghf?_.+\\.(md|txt)}', cacheMiddleware, async context => {
   }
 
   return context.text(markdown, 200, {
-    'Content-Type': contentType,
+    'Content-Type': contentType
   })
 })
 
@@ -241,7 +241,7 @@ app.get('/:path{.+}', cacheMiddleware, async context => {
         parsed.owner,
         parsed.repo,
         segments,
-        context.env.GITHUB_TOKEN,
+        context.env.GITHUB_TOKEN
       )
       branch = resolved.branch
       path = resolved.path
@@ -256,7 +256,7 @@ app.get('/:path{.+}', cacheMiddleware, async context => {
     try {
       const content = await getFileContent(parsed.owner, parsed.repo, branch, path!)
       return context.text(content, 200, {
-        'Content-Type': contentType,
+        'Content-Type': contentType
       })
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Failed to fetch file'
@@ -299,7 +299,7 @@ app.get('/:path{.+}', cacheMiddleware, async context => {
         return `## ${file.path}\n\n*Failed to fetch*`
       }
     },
-    10,
+    10
   )
 
   let markdown = `# ${parsed.owner}/${parsed.repo}@${branch}${path ? `/${path}` : ''}\n\n${contents.join('\n\n')}`
@@ -329,7 +329,7 @@ app.get('/:path{.+}', cacheMiddleware, async context => {
   }
 
   return context.text(markdown, 200, {
-    'Content-Type': contentType,
+    'Content-Type': contentType
   })
 })
 

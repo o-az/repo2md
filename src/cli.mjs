@@ -3,14 +3,14 @@
 const API_BASE = 'https://2md.sauce.wiki'
 
 /**
- * @param {Array<string>} args
- * @return {{ url: string | null, excludes: Array<string>, includes: Array<string>, submodules: boolean }}
+ * @param {string[]} args
+ * @returns {{ url: string | null; excludes: string[]; includes: string[]; submodules: boolean }}
  */
 function parseArgs(args) {
   let url = null
-  /** @type {Array<string>} */
+  /** @type {string[]} */
   const excludes = []
-  /** @type {Array<string>} */
+  /** @type {string[]} */
   const includes = []
   let submodules = false
 
@@ -30,9 +30,7 @@ function parseArgs(args) {
   return { url, excludes, includes, submodules }
 }
 
-/**
- * @return {Promise<void>}
- */
+/** @returns {Promise<void>} */
 async function main() {
   const args = process.argv.slice(2)
 

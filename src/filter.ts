@@ -1,9 +1,8 @@
 import type { GitHubFile } from '#github.ts'
 
 /**
- * Parse filter patterns from:
- * - Brace syntax: `{.test.ts,.spec.ts}` → ['.test.ts', '.spec.ts']
- * - Multiple query params: `['A', 'B']` → ['A', 'B']
+ * Parse filter patterns from: - Brace syntax: `{.test.ts,.spec.ts}` → ['.test.ts', '.spec.ts'] -
+ * Multiple query params: `['A', 'B']` → ['A', 'B']
  */
 export function parseFilterParams(values: string[] | undefined): string[] {
   if (!values?.length) return []
@@ -26,6 +25,7 @@ export function parseFilterParams(values: string[] | undefined): string[] {
 
 /**
  * Check if a file path matches a pattern.
+ *
  * - `.test.ts` → suffix match
  * - `src/` → directory match
  * - `*.test.*` → glob match
@@ -37,7 +37,7 @@ export function matchesPattern(filePath: string, pattern: string): boolean {
       `^${pattern
         .split('*')
         .map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-        .join('.*')}$`,
+        .join('.*')}$`
     )
     const fileName = filePath.split('/').pop() ?? ''
     return regex.test(filePath) || regex.test(fileName)
@@ -57,13 +57,11 @@ export function matchesPattern(filePath: string, pattern: string): boolean {
   return fileName === pattern || filePath.includes(pattern)
 }
 
-/**
- * Apply include (whitelist) then exclude (blacklist) filters.
- */
+/** Apply include (whitelist) then exclude (blacklist) filters. */
 export function applyFilters(
   files: GitHubFile[],
   exclude: string[] | undefined,
-  include: string[] | undefined,
+  include: string[] | undefined
 ): GitHubFile[] {
   const includePatterns = parseFilterParams(include)
   const excludePatterns = parseFilterParams(exclude)

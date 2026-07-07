@@ -34,7 +34,7 @@ export async function resolveBranchAndPath(
   owner: string,
   repo: string,
   segments: string[],
-  token?: string,
+  token?: string
 ): Promise<{ branch: string; path?: string }> {
   if (segments.length === 0) {
     const defaultBranch = await getDefaultBranch(owner, repo, token)
@@ -57,7 +57,7 @@ export async function resolveBranchAndPath(
   const defaultBranch = await getDefaultBranch(owner, repo, token)
   return {
     branch: defaultBranch,
-    path: segments.join('/') || undefined,
+    path: segments.join('/') || undefined
   }
 }
 
@@ -99,7 +99,7 @@ export function parseGitHubUrl(url: string): ParsedGitHubUrl {
     'procfile',
     'license',
     'readme',
-    'changelog',
+    'changelog'
   ]
   const isFile = fileName.includes('.') || knownFiles.includes(fileName)
 
@@ -111,7 +111,7 @@ export function parseGitHubUrl(url: string): ParsedGitHubUrl {
 async function getRepoFilesFromUngh(
   owner: string,
   repo: string,
-  branch: string,
+  branch: string
 ): Promise<Array<GitHubFile>> {
   const url = `${UNGH_BASE}/repos/${owner}/${repo}/files/${encodeURIComponent(branch)}`
   let response: Response
@@ -120,7 +120,7 @@ async function getRepoFilesFromUngh(
   } catch (e) {
     const errorMsg = e instanceof Error ? e.message : String(e)
     throw new Error(
-      `Network error fetching files from ungh for ${owner}/${repo}@${branch}: ${errorMsg}`,
+      `Network error fetching files from ungh for ${owner}/${repo}@${branch}: ${errorMsg}`
     )
   }
   if (!response.ok) {
@@ -129,7 +129,7 @@ async function getRepoFilesFromUngh(
     }
     const errorText = await response.text().catch(() => '')
     throw new Error(
-      `Failed to fetch files from ungh: ${response.status} ${response.statusText} for ${owner}/${repo}@${branch}${errorText ? ` - ${errorText.slice(0, 100)}` : ''}`,
+      `Failed to fetch files from ungh: ${response.status} ${response.statusText} for ${owner}/${repo}@${branch}${errorText ? ` - ${errorText.slice(0, 100)}` : ''}`
     )
   }
 
@@ -151,7 +151,7 @@ interface GitHubTreeResponse {
 async function getRepoFilesFromGitHub(
   owner: string,
   repo: string,
-  branch: string,
+  branch: string
 ): Promise<Array<GitHubFile>> {
   const url = `${GITHUB_API_BASE}/repos/${owner}/${repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`
   let response: Response
@@ -160,13 +160,13 @@ async function getRepoFilesFromGitHub(
   } catch (e) {
     const errorMsg = e instanceof Error ? e.message : String(e)
     throw new Error(
-      `Network error fetching files from GitHub API for ${owner}/${repo}@${branch}: ${errorMsg}`,
+      `Network error fetching files from GitHub API for ${owner}/${repo}@${branch}: ${errorMsg}`
     )
   }
   if (!response.ok) {
     const errorText = await response.text().catch(() => '')
     throw new Error(
-      `GitHub API error: ${response.status} ${response.statusText} for ${owner}/${repo}@${branch}${errorText ? ` - ${errorText.slice(0, 100)}` : ''}`,
+      `GitHub API error: ${response.status} ${response.statusText} for ${owner}/${repo}@${branch}${errorText ? ` - ${errorText.slice(0, 100)}` : ''}`
     )
   }
 
@@ -177,14 +177,14 @@ async function getRepoFilesFromGitHub(
       path: item.path,
       mode: item.mode,
       sha: item.sha,
-      size: item.size ?? 0,
+      size: item.size ?? 0
     }))
 }
 
 export async function getRepoFiles(
   owner: string,
   repo: string,
-  branch: string,
+  branch: string
 ): Promise<Array<GitHubFile>> {
   try {
     return await getRepoFilesFromUngh(owner, repo, branch)
@@ -199,14 +199,14 @@ export async function getRepoFiles(
 export async function getDefaultBranch(
   owner: string,
   repo: string,
-  token?: string,
+  token?: string
 ): Promise<string> {
   const headers: Record<string, string> = { 'User-Agent': '2md' }
   if (token) {
     headers.Authorization = `Bearer ${token}`
   }
   const response = await fetch(`${GITHUB_API_BASE}/repos/${owner}/${repo}`, {
-    headers,
+    headers
   })
   if (!response.ok) {
     return 'main'
@@ -220,7 +220,7 @@ export async function getFileContent(
   repo: string,
   branch: string,
   path: string,
-  retries = 3,
+  retries = 3
 ): Promise<string> {
   const encodedPath = path.split('/').map(encodeURIComponent).join('/')
   const url = `${RAW_GITHUB_BASE}/${owner}/${repo}/${encodeURIComponent(branch)}/${encodedPath}`
@@ -235,27 +235,27 @@ export async function getFileContent(
         const errorMsg = e instanceof Error ? e.message : String(e)
         if (attempt < retries - 1) {
           lastError = new Error(
-            `Network error fetching file (attempt ${attempt + 1}/${retries}) for ${owner}/${repo}@${branch}/${path}: ${errorMsg}`,
+            `Network error fetching file (attempt ${attempt + 1}/${retries}) for ${owner}/${repo}@${branch}/${path}: ${errorMsg}`
           )
           await new Promise(r => setTimeout(r, 100 * 2 ** attempt))
           continue
         }
         throw new Error(
-          `Network error fetching file for ${owner}/${repo}@${branch}/${path}: ${errorMsg}`,
+          `Network error fetching file for ${owner}/${repo}@${branch}/${path}: ${errorMsg}`
         )
       }
       if (response.ok) return response.text()
       if (response.status === 429 || response.status >= 500) {
         const errorText = await response.text().catch(() => '')
         lastError = new Error(
-          `Failed to fetch file (attempt ${attempt + 1}/${retries}): ${response.status} ${response.statusText} for ${owner}/${repo}@${branch}/${path}${errorText ? ` - ${errorText.slice(0, 100)}` : ''}`,
+          `Failed to fetch file (attempt ${attempt + 1}/${retries}): ${response.status} ${response.statusText} for ${owner}/${repo}@${branch}/${path}${errorText ? ` - ${errorText.slice(0, 100)}` : ''}`
         )
         await new Promise(r => setTimeout(r, 100 * 2 ** attempt))
         continue
       }
       const errorText = await response.text().catch(() => '')
       throw new Error(
-        `Failed to fetch file: ${response.status} ${response.statusText} for ${owner}/${repo}@${branch}/${path}${errorText ? ` - ${errorText.slice(0, 100)}` : ''}`,
+        `Failed to fetch file: ${response.status} ${response.statusText} for ${owner}/${repo}@${branch}/${path}${errorText ? ` - ${errorText.slice(0, 100)}` : ''}`
       )
     } catch (e) {
       if (
@@ -286,7 +286,7 @@ export async function getFileContent(
 export async function fetchWithConcurrency<T, R>(
   items: T[],
   fn: (item: T) => Promise<R>,
-  concurrency = 10,
+  concurrency = 10
 ): Promise<R[]> {
   const results: R[] = []
   let index = 0
@@ -304,7 +304,7 @@ export async function fetchWithConcurrency<T, R>(
 
 export function filterFiles(
   files: Array<GitHubFile>,
-  ignorePatterns: Array<string>,
+  ignorePatterns: Array<string>
 ): Array<GitHubFile> {
   return files.filter(file => {
     const pathParts = file.path.split('/')
@@ -340,7 +340,7 @@ export function parseGitmodules(content: string): Array<Submodule> {
             path: current.path,
             url: current.url,
             owner: parsed.owner,
-            repo: parsed.repo,
+            repo: parsed.repo
           })
         }
       }
@@ -370,7 +370,7 @@ export function parseGitmodules(content: string): Array<Submodule> {
         path: current.path,
         url: current.url,
         owner: parsed.owner,
-        repo: parsed.repo,
+        repo: parsed.repo
       })
     }
   }
@@ -400,7 +400,7 @@ export async function fetchSubmodules(
   allFiles: Array<GitHubFile>,
   maxDepth = 2,
   currentDepth = 0,
-  visited = new Set<string>(),
+  visited = new Set<string>()
 ): Promise<Array<SubmoduleContent>> {
   if (currentDepth >= maxDepth) return []
 
@@ -431,7 +431,7 @@ export async function fetchSubmodules(
           results.push({
             submodule,
             files: [],
-            error: 'Circular reference detected',
+            error: 'Circular reference detected'
           })
           return
         }
@@ -449,17 +449,17 @@ export async function fetchSubmodules(
                 submodule.owner,
                 submodule.repo,
                 defaultBranch,
-                file.path,
+                file.path
               )
               return { path: `${submodule.path}/${file.path}`, content }
             } catch {
               return {
                 path: `${submodule.path}/${file.path}`,
-                content: '*Failed to fetch*',
+                content: '*Failed to fetch*'
               }
             }
           },
-          10,
+          10
         )
 
         results.push({ submodule, files: contents })
@@ -471,7 +471,7 @@ export async function fetchSubmodules(
           subFiles,
           maxDepth,
           currentDepth + 1,
-          visited,
+          visited
         )
 
         for (const nested of nestedResults) {
@@ -479,18 +479,18 @@ export async function fetchSubmodules(
             ...nested,
             files: nested.files.map(f => ({
               ...f,
-              path: `${submodule.path}/${f.path}`,
-            })),
+              path: `${submodule.path}/${f.path}`
+            }))
           })
         }
       } catch (e) {
         results.push({
           submodule,
           files: [],
-          error: e instanceof Error ? e.message : 'Unknown error',
+          error: e instanceof Error ? e.message : 'Unknown error'
         })
       }
-    }),
+    })
   )
 
   return results
@@ -639,7 +639,7 @@ export function isTextFile(path: string): boolean {
     '.proto',
     '.thrift',
     '.wasm',
-    '.wat',
+    '.wat'
   ]
 
   const fileName = path.split('/').pop()?.toLowerCase() || ''
@@ -691,7 +691,7 @@ export function isTextFile(path: string): boolean {
     '.env.production',
     '.dockerignore',
     '.stylelintrc',
-    '.markdownlint',
+    '.markdownlint'
   ]
 
   if (knownTextFiles.includes(fileName)) return true

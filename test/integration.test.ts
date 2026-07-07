@@ -8,7 +8,7 @@ const BROWSER_UA =
 
 async function fetchApp(
   path: string,
-  options?: { followRedirects?: boolean; browser?: boolean },
+  options?: { followRedirects?: boolean; browser?: boolean }
 ): Promise<Response> {
   const url = path.startsWith('http') ? path : `http://localhost/${path}`
   const headers: Record<string, string> = {}
@@ -37,7 +37,7 @@ describe('Browser redirects', () => {
     const res = await app.request(
       'http://localhost/https://github.com/o-az/2md',
       { redirect: 'manual', headers: { 'user-agent': BROWSER_UA } },
-      env,
+      env
     )
     expect(res.status).toBe(301)
     expect(res.headers.get('location')).toContain('gh_o-az_2md@main.md')

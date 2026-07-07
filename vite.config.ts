@@ -10,7 +10,7 @@ const devFlagsSchema = z.object({
   PORT: z.prefault(z.coerce.number(), 6969),
   DISABLE_CACHE: z.prefault(enabledSchema, 'false'),
   VITE_DEVTOOLS: z.prefault(enabledSchema, 'false'),
-  VITE_FORWARD_CONSOLE: z.prefault(enabledSchema, 'false'),
+  VITE_FORWARD_CONSOLE: z.prefault(enabledSchema, 'false')
 })
 
 export default defineConfig(config => {
@@ -30,7 +30,7 @@ export default defineConfig(config => {
     server: {
       allowedHosts,
       port: devFlags.PORT,
-      forwardConsole: devFlags.VITE_FORWARD_CONSOLE,
-    },
+      forwardConsole: devFlags.VITE_FORWARD_CONSOLE
+    }
   }
 })

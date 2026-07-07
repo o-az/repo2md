@@ -27,7 +27,7 @@ describe('parseFilterParams', () => {
     expect(parseFilterParams(['{.test.ts,.spec.ts}', '.e2e.ts'])).toEqual([
       '.test.ts',
       '.spec.ts',
-      '.e2e.ts',
+      '.e2e.ts'
     ])
   })
 })
@@ -61,7 +61,7 @@ describe('applyFilters', () => {
     { path: 'src/index.test.ts', mode: '100644', sha: 'b', size: 100 },
     { path: 'src/utils/helper.ts', mode: '100644', sha: 'c', size: 100 },
     { path: 'src/utils/helper.spec.ts', mode: '100644', sha: 'd', size: 100 },
-    { path: 'README.md', mode: '100644', sha: 'f', size: 100 },
+    { path: 'README.md', mode: '100644', sha: 'f', size: 100 }
   ]
 
   test('no filters returns all files', () => {

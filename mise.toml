@@ -1,0 +1,12 @@
+#:schema https://mise.en.dev/schema/mise.json
+
+[settings]
+experimental = true
+
+[tools]
+bun = "latest"
+node = "latest"
+tombi = "latest"
+shfmt = "latest"
+shellcheck = "latest"
+cloudflared = "latest"

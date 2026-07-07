@@ -1,11 +1,12 @@
 {
   "recommendations": [
-    "biomejs.biome",
+    "mkhl.shfmt",
+    "oxc.oxc-vscode",
     "tobermory.es6-string-html",
-    "yzhang.markdown-all-in-one",
     "github.vscode-github-actions"
   ],
   "unwantedRecommendations": [
+    "biomejs.biome",
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint"
   ]

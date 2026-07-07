@@ -9,7 +9,7 @@ https://2md.sauce.wiki
 ## Skill
 
 ```sh
-npx --yes skills@latest add o-az/skills --skill github-to-markdown 
+npx --yes skills@latest add o-az/skills --skill github-to-markdown
 ```
 
 ## Examples
@@ -74,7 +74,7 @@ Use `exclude` and `include` query params to filter files.
 - `test` — contains match -->
 
 | pattern    | description     |
-|------------|-----------------|
+| ---------- | --------------- |
 | `.test.ts` | suffix match    |
 | `src/`     | directory match |
 | `*.test.*` | glob wildcard   |
