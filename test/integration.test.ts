@@ -94,10 +94,10 @@ describe('File handling', () => {
   })
 
   test('file shorthand (with extension)', async () => {
-    const res = await fetchApp('github.com/o-az/2md/biome.json')
+    const res = await fetchApp('github.com/o-az/2md/package.json')
     expect(res.status).toBe(200)
     const text = await res.text()
-    expect(text).toContain('biomejs')
+    expect(text).toContain('scripts')
   })
 
   test('file in subdirectory', async () => {
@@ -297,7 +297,7 @@ describe('Include/Exclude filters', () => {
     }
     expect(res.status).toBe(200)
     const text = await res.text()
-    expect(text).toContain('biome.json')
+    expect(text).toContain('package.json')
   })
 
   test('include directory', async () => {
